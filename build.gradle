@@ -1,0 +1,38 @@
+plugins {
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'com.moowork.node' version '1.2.0'
+    id 'java'
+}
+
+
+jar {
+    baseName = 'weatherserver'
+    version =  '0.0.1-SNAPSHOT'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+task cleanFrontend(type: Delete) {
+    delete 'src/main/resources/static'
+    followSymlinks = true
+}
+
+task buildFrontend(type: NpmTask) {
+    args = ['run', 'build']
+}
+
+task watchFrontend(type: NodeTask) {
+    script = file('./watchFrontend.js')
+}
+
+buildFrontend.dependsOn cleanFrontend
+
+clean.dependsOn cleanFrontend
+compileJava.dependsOn buildFrontend
